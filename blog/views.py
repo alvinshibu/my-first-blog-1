@@ -4,11 +4,11 @@ from .forms import PostForm
 from django.shortcuts import render,redirect
 from django.utils import timezone
 from .models import Post
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
-    
+    for post in posts:
+        post.reading_time = post.calculate_reading_time()
     return render(request, 'blog/post_list.html', {'posts': posts})
 
 def post_new(request):
@@ -53,3 +53,4 @@ def post_remove(request, pk):
     post = get_object_or_404(Post, pk=pk)
     post.delete()
     return redirect('post_list')
+
